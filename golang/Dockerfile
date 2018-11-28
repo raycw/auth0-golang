@@ -11,7 +11,9 @@ RUN go install -v ./...
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 COPY --from=builder /go/bin/app /app
-COPY *.html public/ /
+COPY *.html /
+COPY public/ /public/
+RUN ls -l -a
 ENTRYPOINT ./app
 LABEL Name=golang Version=0.0.1
 EXPOSE 3000
