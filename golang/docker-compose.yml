@@ -2,7 +2,7 @@ version: '2.1'
 
 services:
   golang-auth0:
-    image: raycw/golang-auth0
+    image: golang-auth0
     build: .
     env_file: .env
     ports:
