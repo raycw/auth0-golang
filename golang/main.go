@@ -34,6 +34,8 @@ func main() {
 	store = sessions.NewCookieStore([]byte(os.Getenv("SESSIONS_SECRET")))
 	gob.Register(map[string]interface{}{})
 
+	oauth2.RegisterBrokenAuthHeaderProvider("https://" + os.Getenv("AUTH0_DOMAIN"))
+
 	r := mux.NewRouter()
 	r.HandleFunc("/", HomeHandler)
 	r.HandleFunc("/login", LoginHandler)
@@ -149,11 +151,13 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := store.Get(r, "state")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println("callback state invalid." + err.Error())
 		return
 	}
 
 	if state != session.Values["state"] {
 		http.Error(w, "Invalid state parameter", http.StatusInternalServerError)
+		log.Println("callback state invalid. Expect: " + session.Values["state"].(string) + " Actual: " + state)
 		return
 	}
 
